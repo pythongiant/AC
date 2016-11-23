@@ -455,6 +455,7 @@ bool filterunrenderables(char *s)
         else *d++ = *s;
         s++;
     }
+    *d = '\0';
     return res;
 }
 
