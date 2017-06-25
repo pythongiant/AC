@@ -816,7 +816,7 @@ void checkinput()
                 entropy_add_byte(event.key.keysym.sym ^ totalmillis);
                 EVENTDEBUG(concatformatstring(eb, " sym %d (%Xh), scancode %d (%Xh), state %d, repeat %d", event.key.keysym.sym, event.key.keysym.sym, event.key.keysym.scancode, event.key.keysym.scancode, event.key.state, event.key.repeat));
                 if(event.key.keysym.sym == 0x40000000) event.key.keysym.sym |= event.key.keysym.scancode; // workaround SDL 2.0.5 bug which returns sym == 40000000h for all dead keys
-                if(!event.key.repeat || keyrepeatmask) keypress(event.key.keysym.sym, event.key.state==SDL_PRESSED, (SDL_Keymod)event.key.keysym.mod);
+                if(!event.key.repeat || keyrepeatmask) keypress(event.key.keysym.sym, event.key.keysym.scancode, event.key.state==SDL_PRESSED, (SDL_Keymod)event.key.keysym.mod);
                 break;
 
             case SDL_TEXTINPUT:
@@ -921,7 +921,7 @@ void checkinput()
             case SDL_MOUSEBUTTONUP:
                 EVENTDEBUG(concatformatstring(eb, "(SDL_MOUSEBUTTON%s) button %d, state %d, clicks %d, x %d, y %d", event.type == SDL_MOUSEBUTTONUP ? "UP" : "DOWN", event.button.button, event.button.state, event.button.clicks, event.button.x, event.button.y));
                 if(lasttype==event.type && lastbut==event.button.button) break;
-                keypress(-(event.button.button > 3 ? (event.button.button + 4) : event.button.button), event.button.state != SDL_RELEASED);
+                keypress(-(event.button.button > 3 ? (event.button.button + 4) : event.button.button), 0, event.button.state != SDL_RELEASED);
                 lasttype = event.type;
                 lastbut = event.button.button;
                 break;
@@ -931,14 +931,14 @@ void checkinput()
                 if(event.wheel.y)
                 {
                     int key = event.wheel.y > 0 ? SDL_AC_BUTTON_WHEELUP : SDL_AC_BUTTON_WHEELDOWN;
-                    keypress(key, true); // Emulate SDL1-style mouse wheel events by immediately "releasing" the wheel "button"
-                    keypress(key, false);
+                    keypress(key, 0, true); // Emulate SDL1-style mouse wheel events by immediately "releasing" the wheel "button"
+                    keypress(key, 0, false);
                 }
                 if(event.wheel.x)
                 {
                     int key = event.wheel.x > 0 ? SDL_AC_BUTTON_RIGHT : SDL_AC_BUTTON_LEFT;
-                    keypress(key, true);
-                    keypress(key, false);
+                    keypress(key, 0, true);
+                    keypress(key, 0, false);
                 }
                 break;
         }
